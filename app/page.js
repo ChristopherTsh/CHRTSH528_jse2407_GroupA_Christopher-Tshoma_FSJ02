@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import ProductGrid from "./components/ProductGrid";
 import SearchBar from "./components/SearchBar.js";
-import CategoryFilter from "./components/CategoryFilter";
+import CategoryFilter from "./components/CategoryFilter.js";
 import PriceSort from "./components/PriceSort";
 import Loader from "./Loader";
 import Custom404 from "../app/ErrorMessage";
