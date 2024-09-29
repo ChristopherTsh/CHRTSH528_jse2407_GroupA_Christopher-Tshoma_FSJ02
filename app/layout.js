@@ -2,97 +2,126 @@
 
 import '../app/globals.css';
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation'; // Make sure to import from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'; 
 import Head from 'next/head';
 import CategoryFilter from "./components/CategoryFilter";
 import ProductGrid from "./components/ProductGrid";
 import SearchBar from "./components/SearchBar";
 import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
+
+// Footer component
+function Footer() {
+  return (
+    <footer className="bg-gray-800 text-white p-4 mt-8">
+      <div className="container mx-auto text-center">
+        <p>&copy; {new Date().getFullYear()} Your Store Name. All rights reserved.</p>
+      </div>
+    </footer>
+  );
+}
+
+// Pagination component
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  return (
+    <div className="flex justify-between items-center">
+      <button
+        disabled={currentPage === 1}
+        onClick={() => onPageChange(currentPage - 1)}
+        className="bg-gray-300 text-black px-4 py-2 rounded-md disabled:opacity-50"
+      >
+        Previous
+      </button>
+      <span className="text-gray-700">
+        Page {currentPage} of {totalPages}
+      </span>
+      <button
+        disabled={currentPage === totalPages}
+        onClick={() => onPageChange(currentPage + 1)}
+        className="bg-gray-300 text-black px-4 py-2 rounded-md disabled:opacity-50"
+      >
+        Next
+      </button>
+    </div>
+  );
+}
 
 export default function RootLayout({ children }) {
-  const router = useRouter(); // Use router in a client component
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [sortOption, setSortOption] = useState("asc");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || "");
+  const [sortOption, setSortOption] = useState(searchParams.get('sort') || "asc");
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page')) || 1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [currentPage]);
 
-  // Function to fetch all products, accounting for pagination limits
   const fetchProducts = async () => {
     setLoading(true);
-    setError(false);
-
-    let allProducts = [];
-    let page = 1;
-    const pageSize = 20; // Assume the API returns 20 products per page
-
     try {
-      // First check if the API supports a "limit" parameter to get all products at once
-      const response = await fetch("https://next-ecommerce-api.vercel.app/products?limit=200");
-      if (response.ok) {
-        const data = await response.json();
-        setProducts(data);
-        setFilteredProducts(data);
-      } else {
-        // If no "limit" is supported, fallback to manual pagination
-        while (true) {
-          const pageResponse = await fetch(`https://next-ecommerce-api.vercel.app/products?page=${page}&pageSize=${pageSize}`);
-          if (!pageResponse.ok) throw new Error('Network response was not ok');
-          const pageData = await pageResponse.json();
-          if (pageData.length === 0) break; // Stop if no more products
-          allProducts = [...allProducts, ...pageData];
-          page += 1; // Increment page number
-        }
-
-        setProducts(allProducts);
-        setFilteredProducts(allProducts);
-      }
+      const response = await fetch(`https://next-ecommerce-api.vercel.app/products?limit=200`);
+      if (!response.ok) throw new Error('Failed to fetch products');
+      const data = await response.json();
+      
+      setProducts(data);
+      setTotalPages(Math.ceil(data.length / 20)); // Calculate total pages based on the number of products
+      applyFilters(data); // Apply filters after fetching data
     } catch (error) {
       console.error("Error fetching products:", error);
-      setError(true);
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter and sort logic
-  useEffect(() => {
-    const applyFilters = () => {
-      let filtered = products;
+  const applyFilters = (products) => {
+    let filtered = products;
 
-      if (searchQuery) {
-        filtered = filtered.filter(product => product.title.toLowerCase().includes(searchQuery.toLowerCase()));
-      }
+    if (searchQuery) {
+      filtered = filtered.filter(product => product.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
 
-      if (selectedCategory) {
-        filtered = filtered.filter(product => product.category === selectedCategory);
-      }
+    if (selectedCategory) {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
 
-      if (sortOption === "asc") {
-        filtered.sort((a, b) => a.price - b.price);
-      } else if (sortOption === "desc") {
-        filtered.sort((a, b) => b.price - a.price);
-      }
+    if (sortOption === "asc") {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortOption === "desc") {
+      filtered.sort((a, b) => b.price - a.price);
+    }
 
-      setFilteredProducts(filtered);
-    };
+    // Paginate the filtered results
+    const startIndex = (currentPage - 1) * 20;
+    const paginatedProducts = filtered.slice(startIndex, startIndex + 20);
 
-    applyFilters();
-  }, [products, searchQuery, selectedCategory, sortOption]);
+    setFilteredProducts(paginatedProducts);
 
-  // Reset filters function
+    // Update the URL with search, category, sort, and page parameters
+    const queryParams = new URLSearchParams({
+      search: searchQuery,
+      category: selectedCategory,
+      sort: sortOption,
+      page: currentPage.toString(),
+    });
+
+    router.push(`/products?${queryParams.toString()}`);
+  };
+
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedCategory("");
     setSortOption("asc");
-    router.push('/products'); // Reset URL parameters
+    setCurrentPage(1);
+    router.push('/products'); // Reset URL
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -107,8 +136,12 @@ export default function RootLayout({ children }) {
             <h1 className="text-2xl font-bold mb-4">Product List</h1>
 
             <div className="flex flex-col md:flex-row md:justify-between mb-4">
+              {/* Search bar */}
               <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+              
+              {/* Category filter */}
               <CategoryFilter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <label htmlFor="sort" className="self-center">Sort by price:</label>
                 <select
@@ -133,18 +166,24 @@ export default function RootLayout({ children }) {
             </div>
 
             {loading && <Loader />}
-            {error && <ErrorMessage message="Error fetching products. Please try again later." />}
-            {!loading && !error && (
+
+            {!loading && (
               <>
                 <ProductGrid products={filteredProducts} />
 
-                <div className="flex justify-between items-center my-4">
-                  {/* Pagination controls can go here */}
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </>
             )}
           </div>
+
           {children}
+
+          {/* Footer */}
+          <Footer />
         </body>
       </html>
     </>
