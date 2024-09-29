@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import ProductGrid from "./components/ProductGrid";
 import SearchBar from "./components/SearchBar.js";
 import CategoryFilter from "./components/CategoryFilter.js";
-import PriceSort from "./components/PriceSort.js";
+import PriceSort from "./components/SortDropdown.js";
 import Loader from "./Loader";
 import Custom404 from "../app/ErrorMessage";
 import Pagination from "./components/Pagination";
