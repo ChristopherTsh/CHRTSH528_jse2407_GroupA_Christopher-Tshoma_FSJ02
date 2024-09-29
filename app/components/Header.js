@@ -2,7 +2,7 @@
 
 import SearchBar from './SearchBar';
 import CategoryFilter from './CategoryFilter';
-import SortDropdown from './SortDropdown';
+import SortDropdown from './SortOptions';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {

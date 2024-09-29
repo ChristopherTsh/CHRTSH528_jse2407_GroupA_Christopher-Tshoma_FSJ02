@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import Image from 'next/image';
 
 /**
  * ProductGrid component displays a grid of products with their images, titles, prices, and action buttons.
