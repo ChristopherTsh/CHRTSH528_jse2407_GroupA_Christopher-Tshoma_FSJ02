@@ -1,22 +1,36 @@
-import { useRouter } from "next/router";
-import { useState } from "react";
+"use client";
 
-function CategoryFilter({ categories }) {
-  const [selectedCategory, setSelectedCategory] = useState("");
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import config from '../utils/config'; // Import config to get the API base URL
+
+export default function CategoryFilter() {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch(`${config.apiBaseUrl}/categories`);
+        if (!res.ok) throw new Error('Failed to fetch categories');
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        setCategories([]);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const handleCategoryChange = (e) => {
     const category = e.target.value;
     setSelectedCategory(category);
-    router.push(`/?category=${category}`);
+    router.push(`/products?category=${category}`);
   };
 
   return (
-    <select
-      value={selectedCategory}
-      onChange={handleCategoryChange}
-      className="border p-2 mb-4"
-    >
+    <select value={selectedCategory} onChange={handleCategoryChange} className="border p-2 rounded">
       <option value="">All Categories</option>
       {categories.map((category) => (
         <option key={category} value={category}>
@@ -26,5 +40,3 @@ function CategoryFilter({ categories }) {
     </select>
   );
 }
-
-export default CategoryFilter;
