@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -9,6 +8,7 @@ export default function SearchBar({ onSearch }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Search term:", searchTerm);
     onSearch(searchTerm);
   };
 

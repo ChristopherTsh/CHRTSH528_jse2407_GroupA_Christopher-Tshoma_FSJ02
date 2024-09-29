@@ -1,59 +1,53 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import ProductGrid from './ProductGrid';
+import { useState, useEffect } from 'react';
+import { fetchProducts } from '../utils/api';
+import ProductGrid from './ProductGrid'; // Import your ProductGrid component
 
-const ProductsClient = ({ searchParams }) => {
+export default function ProductsClient({ searchParams }) {
+  const { category = '', sort = '', search = '' } = searchParams;
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
-
-  const { category = '', sort = '', search = '' } = searchParams || {};
-
+  const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Fetch products whenever the searchParams or currentPage changes
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch(
-          `https://next-ecommerce-api.vercel.app/products?category=${category}&sort=${sort}&search=${search}&limit=50`
-        );
-
-        console.log("Fetching products with params:", { category, sort, search });
-        console.log("API Response Status:", response.status);
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch products');
-        }
-
-        const productList = await response.json();
-        console.log("Full API Response:", productList);
-
-        if (!Array.isArray(productList) || productList.length === 0) {
-          console.error('No products found in API response.');
-          setProducts([]);
-        } else {
-          setProducts(productList);
-        }
-      } catch (error) {
-        console.error("Error in ProductsClient:", error.message);
-        setError(error.message);
-      }
+    const fetchData = async () => {
+      const { products, total } = await fetchProducts({ category, sort, search, page: currentPage, limit: 20 });
+      console.log('Fetched Products:', products);
+      console.log('Total Products:', total);
+      setProducts(products);
+      setTotal(total);
     };
 
-    fetchProducts();
-  }, [category, sort, search]);
+    fetchData().catch((error) => {
+      console.error('Error in fetchData:', error);
+    });
+  }, [category, sort, search, currentPage]);
 
-  if (error) {
-    return <div>Error loading products: {error}</div>;
-  }
-
-  if (!Array.isArray(products) || products.length === 0) {
-    return <div>No products found.</div>;
-  }
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <div>
-      <ProductGrid products={products} />
+      {products.length > 0 ? (
+        <ProductGrid products={products} />
+      ) : (
+        <p>No products found</p>
+      )}
+      <div className="pagination">
+        {/* Pagination controls */}
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <span>Page {currentPage}</span>
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage * 20 >= total}>
+          Next
+        </button>
+      </div>
+      <p>Total Products: {total}</p>
     </div>
   );
-};
-
-export default ProductsClient;
+}

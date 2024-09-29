@@ -1,10 +1,7 @@
-// app/page.js
 import ProductsClient from './components/ProductsClient';
 
-
-// Server Component
 export default function HomePage({ searchParams }) {
-  // Pass searchParams to the client component
+  console.log('Rendering HomePage with search params:', searchParams); // Debug log
   return (
     <div>
       <ProductsClient searchParams={searchParams} />

@@ -1,6 +1,5 @@
 "use client";
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SortDropdown() {
@@ -9,16 +8,18 @@ export default function SortDropdown() {
 
   const handleSortChange = (e) => {
     const selectedSort = e.target.value;
+    console.log("Selected sort option:", selectedSort);
     setSort(selectedSort);
     router.push(`/products?sort=${selectedSort}`);
   };
 
   const resetFilters = () => {
+    console.log("Resetting filters");
     router.push(`/products`);
   };
 
   return (
-    <div className="flex space-x-4 text-bg-green-700">
+    <div className="flex space-x-4">
       <select value={sort} onChange={handleSortChange} className="border p-2 rounded">
         <option value="">Sort by</option>
         <option value="asc">Price: Low to High</option>
