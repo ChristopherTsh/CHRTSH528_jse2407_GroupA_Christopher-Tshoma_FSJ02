@@ -3,6 +3,15 @@
 import Link from "next/link";
 import ProductDetail from "./ProductImageGallery"; // Import ProductDetail component
 
+/**
+ * ProductPage component that displays a product's detail page based on its ID.
+ * 
+ * @component
+ * @param {Object} props - Component properties.
+ * @param {Object} props.params - Parameters from the Next.js routing system.
+ * @param {string} props.params.id - The ID of the product to fetch.
+ * @returns {JSX.Element} ProductPage component.
+ */
 export default async function ProductPage({ params }) {
   let product = null;
   let error = null;

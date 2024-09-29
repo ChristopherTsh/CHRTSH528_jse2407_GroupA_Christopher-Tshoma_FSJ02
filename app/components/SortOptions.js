@@ -1,5 +1,14 @@
-"use client";
+"use client"; // Enable client-side rendering
 
+/**
+ * SortOptions component that allows users to sort products by price.
+ * 
+ * @component
+ * @param {Object} props - Component properties.
+ * @param {string} props.sortOption - The current sort option selected.
+ * @param {function} props.setSortOption - Function to update the sort option state.
+ * @returns {JSX.Element} SortOptions component
+ */
 export default function SortOptions({ sortOption, setSortOption }) {
   const handleSortChange = (e) => {
     setSortOption(e.target.value);

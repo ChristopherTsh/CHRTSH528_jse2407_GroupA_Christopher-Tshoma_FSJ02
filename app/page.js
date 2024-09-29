@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import ProductsClient from './components/ProductsClient';
-import { fetchProducts } from '../app/utils/api';
+import { fetchProducts } from './utils/api';
 
 export default function HomePage({ searchParams }) {
   const router = useRouter();

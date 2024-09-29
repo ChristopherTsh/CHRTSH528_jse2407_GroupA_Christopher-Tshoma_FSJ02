@@ -2,6 +2,15 @@
 "use client";
 import { useRouter } from 'next/navigation';
 
+/**
+ * Pagination component that provides navigation between pages of products.
+ *
+ * @param {Object} props - The component props
+ * @param {number} props.currentPage - The current page number
+ * @param {number} props.total - The total number of products
+ * @param {Function} props.onPageChange - Function to handle the page change
+ * @returns {JSX.Element} The Pagination component
+ */
 const Pagination = ({ currentPage, total, onPageChange }) => {
   const router = useRouter();
   const totalPages = Math.ceil(total / 20);
