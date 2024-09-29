@@ -1,33 +1,29 @@
-import { useState } from "react";
-import { useRouter } from "next/router";
+"use client";
 
-function SearchBar() {
-  const [searchQuery, setSearchQuery] = useState("");
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
+export default function SearchBar({ onSearch }) {
+  const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  const handleSearch = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/?search=${searchQuery}`);
-    } else {
-      router.push("/");
-    }
+    onSearch(searchTerm);
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex items-center mb-4">
+    <form onSubmit={handleSubmit} className="flex items-center space-x-2">
       <input
         type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         placeholder="Search products..."
-        className="border p-2 rounded-l w-full"
+        className="border p-2 rounded text-black"
       />
-      <button type="submit" className="bg-yellow-500 p-2 rounded-r text-white">
+      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
         Search
       </button>
     </form>
   );
 }
-
-export default SearchBar;
