@@ -4,9 +4,7 @@ const API_BASE_URL = config.apiBaseUrl;
 
 export async function fetchProducts({ category = '', sort = '', search = '', page = 1, limit = 20 }) {
   try {
-    const url = `${API_BASE_URL}/products?category=${category}&sort=${sort}&search=${search}&page=${page}&limit=${limit}`;
-    console.log(`Fetching products with URL: ${url}`);
-    
+    const url = `${API_BASE_URL}/products?category=${category}&sort=${sort}&search=${search}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -15,21 +13,9 @@ export async function fetchProducts({ category = '', sort = '', search = '', pag
 
     const data = await response.json();
     console.log('Full API Response:', data);
-    
-    // Adjust the way you access the products and total depending on the actual response structure
-    let products;
-    let total;
 
-    // Check if the response is an array or an object
-    if (Array.isArray(data)) {
-      products = data; // If data is an array, directly assign it
-      total = data.length; // Total will be the length of the array
-    } else if (data.products && Array.isArray(data.products)) {
-      products = data.products; // If data has a products array, use that
-      total = data.total || products.length; // Total is either provided or the length of products
-    } else {
-      throw new Error('Invalid API response structure');
-    }
+    const total = data.length; // Total products
+    const products = data.slice((page - 1) * limit, page * limit); // Paginate products
 
     return { products, total };
   } catch (error) {
@@ -37,4 +23,5 @@ export async function fetchProducts({ category = '', sort = '', search = '', pag
     return { products: [], total: 0 };
   }
 }
+
 

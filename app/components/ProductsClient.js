@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation'; // Use useSearchParams from next/navigation
 import { fetchProducts } from '../utils/api';
-import ProductGrid from './ProductGrid'; // Import your ProductGrid component
+import ProductGrid from './ProductGrid';
+import Pagination from './Pagination';
 
-export default function ProductsClient({ searchParams }) {
-  const { category = '', sort = '', search = '' } = searchParams;
+export default function ProductsClient({ searchParams: initialSearchParams }) {
+  const { category = '', sort = '', search = '' } = initialSearchParams; // Rename searchParams to initialSearchParams
+  const searchParams = useSearchParams(); // Get search params from the URL
+  const currentPage = parseInt(searchParams.get('page'), 10) || 1; // Default to page 1
   const [products, setProducts] = useState([]);
   const [total, setTotal] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  
-  // Fetch products whenever the searchParams or currentPage changes
+
   useEffect(() => {
     const fetchData = async () => {
-      const { products, total } = await fetchProducts({ category, sort, search, page: currentPage, limit: 20 });
-      console.log('Fetched Products:', products);
-      console.log('Total Products:', total);
+      const { products, total } = await fetchProducts({ category, sort, search });
       setProducts(products);
       setTotal(total);
     };
@@ -23,11 +23,11 @@ export default function ProductsClient({ searchParams }) {
     fetchData().catch((error) => {
       console.error('Error in fetchData:', error);
     });
-  }, [category, sort, search, currentPage]);
+  }, [category, sort, search]);
 
-  // Handle page change
   const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+    window.history.pushState({}, '', `?page=${newPage}`); // Update the URL without reloading
+    setCurrentPage(newPage); // Update the current page state
   };
 
   return (
@@ -37,16 +37,7 @@ export default function ProductsClient({ searchParams }) {
       ) : (
         <p>No products found</p>
       )}
-      <div className="pagination">
-        {/* Pagination controls */}
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-          Previous
-        </button>
-        <span>Page {currentPage}</span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage * 20 >= total}>
-          Next
-        </button>
-      </div>
+      <Pagination currentPage={currentPage} total={total} onPageChange={handlePageChange} />
       <p>Total Products: {total}</p>
     </div>
   );
