@@ -9,7 +9,7 @@ import PriceSort from "./components/PriceSort.js";
 import Loader from "./Loader";
 import Custom404 from "../app/ErrorMessage";
 import Pagination from "./components/Pagination";
-import Footer from "./components/Footer";
+import Footer from "./components/ErrorBoundary";
 
 function HomePage() {
   const router = useRouter();
