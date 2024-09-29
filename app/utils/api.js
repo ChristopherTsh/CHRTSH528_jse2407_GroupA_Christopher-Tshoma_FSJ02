@@ -16,12 +16,20 @@ export async function fetchProducts({ category = '', sort = '', search = '', pag
     const data = await response.json();
     console.log('Full API Response:', data);
     
-    if (!data.products || !Array.isArray(data.products)) {
+    // Adjust the way you access the products and total depending on the actual response structure
+    let products;
+    let total;
+
+    // Check if the response is an array or an object
+    if (Array.isArray(data)) {
+      products = data; // If data is an array, directly assign it
+      total = data.length; // Total will be the length of the array
+    } else if (data.products && Array.isArray(data.products)) {
+      products = data.products; // If data has a products array, use that
+      total = data.total || products.length; // Total is either provided or the length of products
+    } else {
       throw new Error('Invalid API response structure');
     }
-
-    const products = data.products || [];
-    const total = data.total || products.length; // Assuming total is provided, else fallback to products.length
 
     return { products, total };
   } catch (error) {
@@ -29,3 +37,4 @@ export async function fetchProducts({ category = '', sort = '', search = '', pag
     return { products: [], total: 0 };
   }
 }
+
