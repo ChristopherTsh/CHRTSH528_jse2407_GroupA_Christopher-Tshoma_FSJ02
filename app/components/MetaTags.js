@@ -1,21 +1,21 @@
-// MetaTags.js
 import Head from 'next/head';
 
 /**
- * MetaTags component for setting up SEO-friendly meta tags, including title and description.
- *
- * @param {Object} props - The component props
- * @param {string} props.title - The title to display in the browser tab and for SEO
- * @param {string} props.description - The description for SEO and social media sharing
- * @returns {JSX.Element} The MetaTags component
+ * MetaTags component for setting the dynamic meta information of the page.
+ * 
+ * @param {Object} props - Component props.
+ * @param {string} props.title - The title to be displayed in the browser tab.
+ * @param {string} props.description - The description of the page for SEO purposes.
+ * @returns {JSX.Element} The rendered MetaTags component.
  */
-const MetaTags = ({ title, description }) => (
-  <Head>
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-  </Head>
-);
-
-export default MetaTags;
+export default function MetaTags({ title, description }) {
+  return (
+    <Head>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:type" content="website" />
+    </Head>
+  );
+}
