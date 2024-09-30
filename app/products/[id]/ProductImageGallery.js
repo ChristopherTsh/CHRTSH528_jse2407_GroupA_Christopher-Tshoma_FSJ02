@@ -41,6 +41,9 @@ export default function ProductDetail({ product }) {
   // State to store the currently selected image for the gallery
   const [currentImage, setCurrentImage] = useState(images[0]);
 
+  // State for sorting reviews
+  const [sortCriteria, setSortCriteria] = useState("date"); // Default sorting by date
+
   /**
    * Handles image load error by falling back to the thumbnail image.
    * 
@@ -48,6 +51,21 @@ export default function ProductDetail({ product }) {
    */
   const handleError = (e) => {
     e.target.src = thumbnail; // Fallback image if loading fails
+  };
+
+  /**
+   * Sorts the reviews based on the selected criteria.
+   * 
+   * @param {Object[]} reviews - The array of reviews to sort
+   * @param {string} criteria - The criteria to sort by ('date' or 'rating')
+   * @returns {Object[]} - The sorted reviews array
+   */
+  const sortReviews = (reviews, criteria) => {
+    if (criteria === "rating") {
+      return [...reviews].sort((a, b) => b.rating - a.rating);
+    } else {
+      return [...reviews].sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
   };
 
   // Calculate the discounted price if a discount is available
@@ -180,9 +198,26 @@ export default function ProductDetail({ product }) {
             {/* User Reviews */}
             <div className="mt-8">
               <h3 className="text-xl font-semibold">User Reviews</h3>
+
+              {/* Sorting Options */}
+              <div className="flex justify-between items-center mt-4">
+                <label htmlFor="sort" className="text-gray-600">
+                  Sort by:
+                </label>
+                <select
+                  id="sort"
+                  value={sortCriteria}
+                  onChange={(e) => setSortCriteria(e.target.value)}
+                  className="border border-gray-300 rounded p-2"
+                >
+                  <option value="date">Date</option>
+                  <option value="rating">Rating</option>
+                </select>
+              </div>
+
               {reviews.length > 0 ? (
                 <ul className="space-y-4 mt-4">
-                  {reviews.map((review, index) => (
+                  {sortReviews(reviews, sortCriteria).map((review, index) => (
                     <li key={index} className="bg-gray-200 p-4 rounded-lg">
                       <div className="flex justify-between items-center">
                         <h4 className="text-lg font-semibold">

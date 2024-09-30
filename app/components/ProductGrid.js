@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import Image from 'next/image';
 
 /**
  * ProductGrid component displays a grid of products with their images, titles, prices, and action buttons.
  *
  * @param {Object} props - The component props
  * @param {Array} props.products - The list of products to display
- * @param {Object[]} props.products[].images - Array of image URLs for the product
+ * @param {Object} props.products[].images - Array of image URLs for the product
  * @param {string} props.products[].id - The unique identifier for the product
  * @param {string} props.products[].title - The title of the product
  * @param {string} props.products[].thumbnail - The URL of the product's thumbnail image
@@ -27,13 +26,10 @@ export default function ProductGrid({ products }) {
           key={product.id}
           className="border border-gray-200 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
         >
-          {/* Product Image Gallery */}
           <ProductImageGallery
             images={product.images}
             fallbackImage={fallbackImage}
           />
-
-          {/* Product Information */}
           <div className="p-4">
             <h3 className="text-lg font-semibold text-gray-800">
               {product.title}
@@ -169,7 +165,7 @@ function ProductImageGallery({ images, fallbackImage }) {
     <div className="relative group">
       {/* Main Image */}
       <img
-        src={images[currentImageIndex] || fallbackImage}
+        src={images[currentImageIndex]}
         alt="Product"
         onError={handleError}
         className="w-full h-64 object-contain"
