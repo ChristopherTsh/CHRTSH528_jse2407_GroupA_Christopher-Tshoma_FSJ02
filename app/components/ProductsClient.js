@@ -9,6 +9,13 @@ import SortOptions from './SortOptions';
 import ResetButton from './ResetButton'; 
 import { useEffect, useState } from 'react';
 
+/**
+ * ProductsClient component handles product filtering, sorting, and pagination.
+ *
+ * @param {Object} props - The component props
+ * @param {Array} props.products - The list of products to display
+ * @returns {JSX.Element} The ProductsClient component
+ */
 export default function ProductsClient({ products }) {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
@@ -65,11 +72,18 @@ export default function ProductsClient({ products }) {
 
   return (
     <>
-      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <CategoryFilter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
-      <SortOptions sortOption={sortOption} setSortOption={setSortOption} />
-      <ResetButton resetFilters={resetFilters} /> {/* Reset Button */}
+      {/* Container for filter controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <div className="flex flex-col md:flex-row space-x-2 md:space-x-4">
+          <CategoryFilter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+          <SortOptions sortOption={sortOption} setSortOption={setSortOption} />
+          <ResetButton resetFilters={resetFilters} /> {/* Reset Button */}
+        </div>
+      </div>
+      {/* Product Grid */}
       <ProductGrid products={filteredProducts} />
+      {/* Pagination controls */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
