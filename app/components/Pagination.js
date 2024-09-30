@@ -1,7 +1,7 @@
-// Pagination component
-function Pagination({ currentPage, totalPages, onPageChange }) {
+// app/components/Pagination.js
+export default function Pagination({ currentPage, totalPages, onPageChange }) {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-center mt-4">
       <button
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
@@ -9,9 +9,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       >
         Previous
       </button>
-      <span className="text-gray-700">
-        Page {currentPage} of {totalPages}
-      </span>
+      <span className="mx-2">Page {currentPage} of {totalPages}</span>
       <button
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
