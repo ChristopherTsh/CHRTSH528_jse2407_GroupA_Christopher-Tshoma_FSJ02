@@ -1,4 +1,4 @@
-"use client"; // Enable client-side rendering
+'use client'; // Enable client-side rendering
 
 /**
  * SearchBar component that allows users to search for products.

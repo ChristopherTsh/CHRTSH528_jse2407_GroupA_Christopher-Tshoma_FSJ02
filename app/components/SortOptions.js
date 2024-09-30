@@ -1,4 +1,4 @@
-"use client"; // Enable client-side rendering
+'use client'; // Enable client-side rendering
 
 /**
  * SortOptions component that allows users to sort products by price.
